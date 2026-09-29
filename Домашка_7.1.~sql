@@ -1,0 +1,72 @@
+﻿/*Опис:
+Створити pipelined функцࠢю get_region_cnt_emp
+Деталі:
+Отримати список регіонів та кількість співробітників у кожному регіоні. Коли буде повністю готовий SQL запит, зробити
+такий хитрий фільтр where (em.department_id = null or null is null).
+
+Далі в пакеті util створити pipelined функцію get_region_cnt_emp з потрібними типами RECORD та TABLE.
+
+Зробити вхідний параметр p_department_id default null і в середині функції передати цей параметр в SQL запит -
+where (em.department_id = p_department_id or p_department_id is null).
+
+Таким чином якщо функцію викликати без значення у параметрі p_department_id, функція повинна повернути дані по всім
+департаментам, а якщо передамо конкретне значення у p_department_id, тоді функція повинна повернути дані по переданому
+департаменту.
+
+Зберегти PL-SQL блок у файл пࠢд назвою H_07_01_tvoji_inichialy.sql. Загрузити в LMS Moodle
+*/
+SELECT d.department_id
+      ,d.department_name
+      ,d.manager_id
+      ,d.location_id
+FROM hr.departments d;
+
+SELECT COUNT(em.employee_id) 
+  FROM hr.employees em;
+  
+SELECT *
+FROM hr.locations;
+
+SELECT * FROM hr.countries;
+
+SELECT * FROM hr.departments;   
+
+
+
+SELECT r.region_name
+      ,COUNT(em.employee_id) as cnt_emp
+
+  FROM hr.employees em
+
+  JOIN hr.departments d ON d.department_id = em.department_id
+  JOIN hr.locations l ON l.location_id = d.location_id
+  JOIN hr.countries c ON c.country_id = l.country_id
+  JOIN hr.regions r ON r.region_id = c.region_id
+
+ WHERE em.department_id = NULL
+    OR NULL IS NULL
+
+ GROUP BY r.region_name;
+---------------------------------------------
+SELECT r.region_name, em.department_id
+      ,COUNT(em.employee_id) as cnt_emp
+
+  FROM hr.employees em
+
+  JOIN hr.departments d ON d.department_id = em.department_id
+  JOIN hr.locations l ON l.location_id = d.location_id
+  JOIN hr.countries c ON c.country_id = l.country_id
+  JOIN hr.regions r ON r.region_id = c.region_id
+
+ WHERE em.department_id = NULL
+    OR NULL IS NULL
+
+ GROUP BY r.region_name, em.department_id
+ ORDER BY 1, 2;
+
+
+
+
+SELECT * FROM TABLE(util.get_region_cnt_emp(p_department_id => 5));
+
+SELECT * FROM TABLE(util.get_region_cnt_emp());
