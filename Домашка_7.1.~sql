@@ -12,8 +12,6 @@ where (em.department_id = p_department_id or p_department_id is null).
 Таким чином якщо функцію викликати без значення у параметрі p_department_id, функція повинна повернути дані по всім
 департаментам, а якщо передамо конкретне значення у p_department_id, тоді функція повинна повернути дані по переданому
 департаменту.
-
-Зберегти PL-SQL блок у файл пࠢд назвою H_07_01_tvoji_inichialy.sql. Загрузити в LMS Moodle
 */
 SELECT d.department_id
       ,d.department_name
